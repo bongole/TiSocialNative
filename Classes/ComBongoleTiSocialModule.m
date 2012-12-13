@@ -135,47 +135,38 @@
             return;
         }
         
-        if ([SLComposeViewController isAvailableForServiceType:serviceType])
-        {
-            SLComposeViewController *sheet = [SLComposeViewController composeViewControllerForServiceType:serviceType];
-            
-            sheet.completionHandler = ^(SLComposeViewControllerResult result) {
-                if (result == SLComposeViewControllerResultDone) {
-                    if (successCallback!=nil)
-                    {
-                        [self _fireEventToListener:@"success" withObject:nil listener:successCallback thisObject:nil];
-                    }
-                } else if (result == SLComposeViewControllerResultCancelled) {
-                    if (cancelCallback!=nil)
-                    {
-                        [self _fireEventToListener:@"cancel" withObject:nil listener:cancelCallback thisObject:nil];
-                    }
-                }
-                [[TiApp app] hideModalController:sheet animated:YES];
-            };
-            
-            [sheet setInitialText:message];
-            if( [imageArray count] > 0 ){
-                for(id image in imageArray )
+        SLComposeViewController *sheet = [SLComposeViewController composeViewControllerForServiceType:serviceType];
+        
+        sheet.completionHandler = ^(SLComposeViewControllerResult result) {
+            if (result == SLComposeViewControllerResultDone) {
+                if (successCallback!=nil)
                 {
-                    [sheet addImage:[TiUtils toImage:image proxy:nil]];
+                    [self _fireEventToListener:@"success" withObject:nil listener:successCallback thisObject:nil];
+                }
+            } else if (result == SLComposeViewControllerResultCancelled) {
+                if (cancelCallback!=nil)
+                {
+                    [self _fireEventToListener:@"cancel" withObject:nil listener:cancelCallback thisObject:nil];
                 }
             }
-            if( [urlArray count] > 0 )
+            [[TiApp app] hideModalController:sheet animated:YES];
+        };
+        
+        [sheet setInitialText:message];
+        if( [imageArray count] > 0 ){
+            for(id image in imageArray )
             {
-                for(NSString* url in urlArray )
-                {
-                    [sheet addURL:[TiUtils toURL:url proxy:nil]];
-                }
-            }
-            [[TiApp app] showModalController:sheet animated:YES];
-        } else
-        {
-            if (errorCallback!=nil)
-            {
-                [self _fireEventToListener:@"error" withObject:nil listener:errorCallback thisObject:nil];
+                [sheet addImage:[TiUtils toImage:image proxy:nil]];
             }
         }
+        if( [urlArray count] > 0 )
+        {
+            for(NSString* url in urlArray )
+            {
+                [sheet addURL:[TiUtils toURL:url proxy:nil]];
+            }
+        }
+        [[TiApp app] showModalController:sheet animated:YES];
     }
     else if (iOsVersionMajor == 5){
         // iOS 5 supports only twitter
