@@ -170,47 +170,38 @@
     }
     else if (iOsVersionMajor == 5){
         // iOS 5 supports only twitter
-        if ([TWTweetComposeViewController canSendTweet])
-        {
-            TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
-            
-            tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result) {
-                if (result == TWTweetComposeViewControllerResultDone) {
-                    if (successCallback!=nil)
-                    {
-                        [self _fireEventToListener:@"success" withObject:nil listener:successCallback thisObject:nil];
-                    }
-                } else if (result == TWTweetComposeViewControllerResultCancelled) {
-                    if (cancelCallback!=nil)
-                    {
-                        [self _fireEventToListener:@"cancel" withObject:nil listener:cancelCallback thisObject:nil];
-                    }
-                }
-                [[TiApp app] hideModalController:tweetSheet animated:YES];
-            };
-            
-            [tweetSheet setInitialText:message];
-            if( [imageArray count] > 0 ){
-                for(id image in imageArray )
+        TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
+        
+        tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result) {
+            if (result == TWTweetComposeViewControllerResultDone) {
+                if (successCallback!=nil)
                 {
-                    [tweetSheet addImage:[TiUtils toImage:image proxy:nil]];
+                    [self _fireEventToListener:@"success" withObject:nil listener:successCallback thisObject:nil];
+                }
+            } else if (result == TWTweetComposeViewControllerResultCancelled) {
+                if (cancelCallback!=nil)
+                {
+                    [self _fireEventToListener:@"cancel" withObject:nil listener:cancelCallback thisObject:nil];
                 }
             }
-            if( [urlArray count] > 0 )
+            [[TiApp app] hideModalController:tweetSheet animated:YES];
+        };
+        
+        [tweetSheet setInitialText:message];
+        if( [imageArray count] > 0 ){
+            for(id image in imageArray )
             {
-                for(NSString* url in urlArray )
-                {
-                    [tweetSheet addURL:[TiUtils toURL:url proxy:nil]];
-                }
-            }
-            [[TiApp app] showModalController:tweetSheet animated:YES];
-        } else
-        {
-            if (errorCallback!=nil)
-            {
-                [self _fireEventToListener:@"error" withObject:nil listener:errorCallback thisObject:nil];
+                [tweetSheet addImage:[TiUtils toImage:image proxy:nil]];
             }
         }
+        if( [urlArray count] > 0 )
+        {
+            for(NSString* url in urlArray )
+            {
+                [tweetSheet addURL:[TiUtils toURL:url proxy:nil]];
+            }
+        }
+        [[TiApp app] showModalController:tweetSheet animated:YES];
     }
 }
 
